@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import Auction, User
+from .models import User
 
 # Register your models here.
-class AuctionAdmin(admin.ModelAdmin):
-    list_display = "id", "title", "bid"
 
-admin.site.register(Auction, AuctionAdmin)
-admin.site.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = "id", "username"
+    
+admin.site.register(User, UserAdmin)
