@@ -12,3 +12,4 @@ class Auction(models.Model):
     
     def __str__(self):
         return f"{self.title} with bid: {self.bid} and id {self.id}"
+

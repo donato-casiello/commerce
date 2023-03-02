@@ -1,6 +1,9 @@
 from django.contrib import admin
 
+from .models import Auction, User
+
 # Register your models here.
+
 from .models import Auction, User
 
 # Register your models here.
