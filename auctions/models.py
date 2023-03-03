@@ -20,9 +20,6 @@ class Bid(models.Model):
     amount = models.DecimalField(max_digits=6, decimal_places=2)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     
-    def __str__(self):
-        return f"{self.user_id} made a bid of {self.amount} for {self.auction_id}"
-    
 class Comment(models.Model):
     auction_id = models.ForeignKey(Auction, on_delete=models.CASCADE)
     comment = models.TextField(max_length=200)
