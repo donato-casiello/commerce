@@ -1,0 +1,21 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+<fieldset>
+    <legend><h1>{{ auction.title }}</h1></legend>
+    <div>
+        <p>Description: {{ auction.description }}</p>
+    </div>
+    <h2>Current price: {{ price }}</h2>
+    <h2>Starting bid: {{ start_bid }}</h2>
+</fieldset>
+<h1>Bids on this item</h1>
+{% if message %}
+    <p>{{ message }}</p>
+{% endif %}
+<form action="{% url 'detail' auction.id %}" method="post">
+    {% csrf_token %}
+    <input type="number" name="amount" placeholder="Bid on this item" step="0.01">
+    <input type="submit">
+</form>
+{% endblock %}

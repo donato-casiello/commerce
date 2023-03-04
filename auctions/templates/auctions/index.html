@@ -8,7 +8,7 @@
         {% for auction in auctions_list %}
             {% if auction.active == True %}
                 <li class="list-group-item list-group-item-action">
-                    <a href="#" class="list-group-item list-group-item-action list-group-item-primary">{{ auction.title }}</a>Starting bid = € {{ auction.start_bid }}
+                    <a href="{% url 'detail' auction.id %}" class="list-group-item list-group-item-action list-group-item-primary">{{ auction.title }}</a>Starting bid = € {{ auction.start_bid }}
                     <div class="ms-2 me-auto">
                         <p>Description: <i>{{ auction.description }}</i></p>
                     </div>

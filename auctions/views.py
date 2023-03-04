@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Auction
+from .models import User, Auction, Bid  
 
 
 def index(request):
@@ -13,7 +13,6 @@ def index(request):
     return render(request, "auctions/index.html", {
         "auctions_list" : auctions_list
     })
-
 
 def login_view(request):
     if request.method == "POST":
@@ -81,3 +80,35 @@ def create(request):
         return render(request, "auctions/create.html", {
             "user" : user
         })
+
+@login_required(login_url='login')
+def detail(request, auction_id):
+    auction = Auction.objects.get(pk=auction_id)
+    id = Auction.objects.get(pk=auction_id)
+    bids = Bid.objects.filter(auction_id=id)
+    if not bids:
+        price = auction.start_bid
+    else:
+        price = max(bid.amount for bid in bids )
+    if request.method == "POST":
+        amount = float(request.POST["amount"])
+        if amount > price:
+            user = User.objects.get(id=request.user.id)
+            new_bid = Bid.objects.create(auction_id=id, amount=amount, user_id=user)
+        else:
+            message = "Your bid must be greater"
+            return render(request, "auctions/detail.html", {
+                "auction" : auction,
+                "price" : price,
+                "start_bid" : auction.start_bid, 
+                "message" : message
+            })
+        return HttpResponseRedirect(reverse('detail', args=[auction.id]))
+    else:
+        return render(request, "auctions/detail.html", {
+            "auction" : auction,
+            "price" : price,
+            "start_bid" : auction.start_bid
+        })
+        
+    
