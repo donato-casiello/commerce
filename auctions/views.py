@@ -9,7 +9,10 @@ from .models import User, Auction
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    auctions_list = Auction.objects.all()
+    return render(request, "auctions/index.html", {
+        "auctions_list" : auctions_list
+    })
 
 
 def login_view(request):

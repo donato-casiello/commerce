@@ -3,5 +3,17 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    {% if auctions_list %}
+    <ul>
+        {% for auction in auctions_list %}
+            {% if auction.active == True %}
+                <li>{{ auction.title }} : Starting bid = € {{ auction.start_bid }}
+                    <div class="ml-3">
+                        <p><i>{{ auction.description }}</i></p>
+                    </div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
 {% endblock %}
