@@ -10,6 +10,7 @@ class Auction(models.Model):
     title = models.CharField(max_length=64)
     description = models.TextField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    start_bid = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
     active = models.BooleanField(default=True)
 
     def __str__(self):
