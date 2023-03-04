@@ -4,12 +4,13 @@
     <h2>Active Listings</h2>
 
     {% if auctions_list %}
-    <ul>
+    <ul class="list-group list-group-flush">
         {% for auction in auctions_list %}
             {% if auction.active == True %}
-                <li>{{ auction.title }} : Starting bid = € {{ auction.start_bid }}
-                    <div class="ml-3">
-                        <p><i>{{ auction.description }}</i></p>
+                <li class="list-group-item list-group-item-action">
+                    <a href="#" class="list-group-item list-group-item-action list-group-item-primary">{{ auction.title }}</a>Starting bid = € {{ auction.start_bid }}
+                    <div class="ms-2 me-auto">
+                        <p>Description: <i>{{ auction.description }}</i></p>
                     </div>
                 </li>
             {% endif %}
