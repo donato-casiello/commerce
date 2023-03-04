@@ -70,7 +70,7 @@ def create(request):
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
-        bid = request.POST["bid"]
+        bid = float(request.POST["bid"])
         user = User.objects.get(id=request.user.id)
         new_auction = Auction(title=title, description=description, owner=user, start_bid=bid)
         new_auction.save()
