@@ -10,7 +10,7 @@ class Auction(models.Model):
     title = models.CharField(max_length=64)
     description = models.TextField(max_length=200)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    start_bid = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+    start_bid = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -18,7 +18,7 @@ class Auction(models.Model):
     
 class Bid(models.Model):
     auction_id = models.ForeignKey(Auction, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=6, decimal_places=2)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     
 class Comment(models.Model):
