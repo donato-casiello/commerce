@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
+from decimal import Decimal
 
 from .models import User, Auction, Bid  
 
@@ -67,16 +68,23 @@ def register(request):
     
 @login_required(login_url='login')
 def create(request):
+    user = User.objects.get(id=request.user.id)
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
-        bid = float(request.POST["bid"])
-        user = User.objects.get(id=request.user.id)
-        new_auction = Auction(title=title, description=description, owner=user, start_bid=bid)
+        bid = request.POST["bid"]
+        bid_decimal = float(bid)
+        # Check the user's input
+        if bid_decimal < 0 or bid_decimal> 1000000:
+            message = "Starting bid must be a number greater than 0 and less than a 1.000.000"
+            return render(request, "auctions/create.html", {
+                "user" : user,
+                "message" : message
+            })
+        new_auction = Auction(title=title, description=description, owner=user, start_bid=bid_decimal)
         new_auction.save()
         return HttpResponseRedirect(reverse("index"))
     else:
-        user = User.objects.get(id=request.user.id)
         return render(request, "auctions/create.html", {
             "user" : user
         })
