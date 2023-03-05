@@ -4,6 +4,8 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib import messages
+
 from decimal import Decimal
 
 from .models import User, Auction, Bid, Comment
@@ -106,6 +108,7 @@ def detail(request, auction_id):
             if 'close' in request.POST:
                 auction.active = False
                 auction.save()
+                messages.success(request, "Auction has been closed")
                 return HttpResponseRedirect(reverse('detail', args=[auction.id]))
         # User doesn't create the auction
         else:

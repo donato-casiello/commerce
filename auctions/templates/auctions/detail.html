@@ -6,6 +6,11 @@
     <div>
         <p>Description: {{ auction.description }}</p>
     </div>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
     <h2>Current price: {{ price }}</h2>
     <h2>Starting bid: {{ start_bid }}</h2>
     <ul>
