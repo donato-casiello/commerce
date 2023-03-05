@@ -73,7 +73,7 @@ def create(request):
         title = request.POST["title"]
         description = request.POST["description"]
         bid = request.POST["bid"]
-        bid_decimal = float(bid)
+        bid_decimal = Decimal(bid)
         # Check the user's input
         if bid_decimal < 0 or bid_decimal> 1000000:
             message = "Starting bid must be a number greater than 0 and less than a 1.000.000"
