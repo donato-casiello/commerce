@@ -91,32 +91,43 @@ def create(request):
 
 @login_required(login_url='login')
 def detail(request, auction_id):
+    # Get the auction data
     auction = Auction.objects.get(pk=auction_id)
-    id = Auction.objects.get(pk=auction_id)
-    bids = Bid.objects.filter(auction_id=id)
+    user = User.objects.get(id=request.user.id)
+    bids = Bid.objects.filter(auction_id=auction.id)
     if not bids:
         price = auction.start_bid
     else:
         price = max(bid.amount for bid in bids )
+    # User submit the form
     if request.method == "POST":
-        amount = float(request.POST["amount"])
-        if amount > price:
-            user = User.objects.get(id=request.user.id)
-            new_bid = Bid.objects.create(auction_id=id, amount=amount, user_id=user)
+        # The user created the auction
+        if auction.owner.id == request.user.id:
+            if 'close' in request.POST:
+                auction.active = False
+                auction.save()
+                return HttpResponseRedirect(reverse('detail', args=[auction.id]))
+        # User doesn't create the auction
         else:
-            message = "Your bid must be greater"
-            return render(request, "auctions/detail.html", {
-                "auction" : auction,
-                "price" : price,
-                "start_bid" : auction.start_bid, 
-                "message" : message
-            })
-        return HttpResponseRedirect(reverse('detail', args=[auction.id]))
+            amount = float(request.POST["amount"])
+            if amount > price:
+                new_bid = Bid.objects.create(auction_id=auction, amount=amount, user_id=user)
+            else:
+                message = "Your bid must be greater"
+                return render(request, "auctions/detail.html", {
+                    "auction" : auction,
+                    "price" : price,
+                    "start_bid" : auction.start_bid, 
+                    "message" : message, 
+                })
+            return HttpResponseRedirect(reverse('detail', args=[auction.id]))
     else:
         return render(request, "auctions/detail.html", {
             "auction" : auction,
             "price" : price,
-            "start_bid" : auction.start_bid
+            "start_bid" : auction.start_bid,
+            "owner" : auction.owner,
+            "user_id" : user.id
         })
         
     

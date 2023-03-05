@@ -15,7 +15,12 @@
 {% endif %}
 <form action="{% url 'detail' auction.id %}" method="post">
     {% csrf_token %}
-    <input type="number" name="amount" placeholder="Bid on this item" step="0.01">
-    <input type="submit">
+    {% if auction.owner.id == request.user.id  %}
+        <p>CLOSE THE AUCTION</p>
+        <input type="submit" name="close" id="close">
+    {% else %}
+        <input type="number" name="amount" placeholder="Bid on this item" step="0.01">
+        <input type="submit">
+    {% endif %}
 </form>
 {% endblock %}
