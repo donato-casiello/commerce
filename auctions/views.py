@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from decimal import Decimal
 
-from .models import User, Auction, Bid  
+from .models import User, Auction, Bid, Comment
 
 
 def index(request):
@@ -109,25 +109,33 @@ def detail(request, auction_id):
                 return HttpResponseRedirect(reverse('detail', args=[auction.id]))
         # User doesn't create the auction
         else:
-            amount = float(request.POST["amount"])
-            if amount > price:
-                new_bid = Bid.objects.create(auction_id=auction, amount=amount, user_id=user)
-            else:
-                message = "Your bid must be greater"
-                return render(request, "auctions/detail.html", {
-                    "auction" : auction,
-                    "price" : price,
-                    "start_bid" : auction.start_bid, 
-                    "message" : message, 
-                })
+            # Check for comments
+            if 'comment' in request.POST and request.POST["comment"].strip() != "":
+                comment = Comment.objects.create(auction_id=auction, comment=request.POST["comment"], user_id=request.user)
+                comment.save()
+            # Check for bid
+            elif 'amount' in request.POST:
+                amount = float(request.POST["amount"])
+                if amount > price:
+                    new_bid = Bid.objects.create(auction_id=auction, amount=amount, user_id=user)
+                else:
+                    message = "Your bid must be greater"
+                    return render(request, "auctions/detail.html", {
+                        "auction" : auction,
+                        "price" : price,
+                        "start_bid" : auction.start_bid, 
+                        "message" : message, 
+                    })
             return HttpResponseRedirect(reverse('detail', args=[auction.id]))
     else:
+        comments = Comment.objects.filter(auction_id=auction)
         return render(request, "auctions/detail.html", {
             "auction" : auction,
             "price" : price,
             "start_bid" : auction.start_bid,
             "owner" : auction.owner,
-            "user_id" : user.id
+            "user_id" : user.id,
+            "comments" : comments
         })
         
     
