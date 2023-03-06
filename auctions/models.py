@@ -29,3 +29,6 @@ class Comment(models.Model):
     def __str__(self):
         return f"{self.user_id} made a comment for {self.auction_id}"
 
+class Watchlist(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    watchlist = models.BooleanField(default=False)
