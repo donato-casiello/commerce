@@ -1,5 +1,58 @@
 body {
     padding: 10px;
+    font-family: 'Lexend', sans-serif;
+    font-family: 'Montserrat', sans-serif;
+    font-family: 'Tilt Neon', cursive;
+}
+
+h1 {
+    text-align: center;
+    margin: 15px;
+    font-size: 70px;
+}
+
+#nav_bar {
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: rgb(45,45,45);
 }
 
 
+.nav-link {
+    color: white;
+    margin: 15px;
+    border: 0px;
+    border-radius: 15px;
+
+}
+
+.nav-link:hover {
+    background-color: rgb(60,60,60);
+    color: azure;
+}
+
+#sign {
+    text-align: end;
+    margin: 10px;
+}
+
+.material-symbols-outlined {
+    color: white;
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 4;
+    margin-left: 8px;
+}
+
+.material-symbols-outlined:hover {
+    border-radius: 50%;
+    
+}
+
+
+#icon {
+    display: flex;
+    align-items: center;
+}
