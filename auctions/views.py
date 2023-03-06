@@ -75,10 +75,16 @@ def create(request):
         title = request.POST["title"]
         description = request.POST["description"]
         bid = request.POST["bid"]
+        if not bid.isdigit():
+            message = "Enter a valid bid: bid must be a number"
+            return render(request, "auctions/create.html", {
+                "user" : user,
+                "message" : message
+            })
         bid_decimal = Decimal(bid)
         # Check the user's input
         if bid_decimal < 0 or bid_decimal> 1000000:
-            message = "Starting bid must be a number greater than 0 and less than a 1.000.000"
+            message = "Enter a valid bid: starting bid must be a number greater than 0 and less than a 1.000.000"
             return render(request, "auctions/create.html", {
                 "user" : user,
                 "message" : message
