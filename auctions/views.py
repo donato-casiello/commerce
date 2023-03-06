@@ -8,7 +8,7 @@ from django.contrib import messages
 
 from decimal import Decimal
 
-from .models import User, Auction, Bid, Comment
+from .models import User, Auction, Bid, Comment, Watchlist
 
 
 def index(request):
@@ -75,7 +75,9 @@ def create(request):
         title = request.POST["title"]
         description = request.POST["description"]
         bid = request.POST["bid"]
-        if not bid.isdigit():
+        try:
+            bid_decimal = Decimal(bid)
+        except:
             message = "Enter a valid bid: bid must be a number"
             return render(request, "auctions/create.html", {
                 "user" : user,
@@ -151,5 +153,31 @@ def detail(request, auction_id):
             "user_id" : user.id,
             "comments" : comments
         })
-        
-    
+
+
+@login_required(login_url='login')
+def watchlist(request):
+    user = request.user
+    # If add/remove item to watchlist
+    if 'add/remove' in request.POST:
+        # Check the user already has the item inside his watchlist
+        auction_id = request.POST["auction_id"]
+        auction = Auction.objects.get(pk=auction_id)    
+        watchlist_item = Watchlist.objects.filter(user_id=user, auction_id=auction).first()
+        if watchlist_item:
+            # The user already has the item in his watchlist
+            watchlist_item.watchlist = False
+            watchlist_item.save()
+        else:
+            # The user doesn't have the item in his watchlist
+            new_watchlist_item = Watchlist(user_id=user, auction_id=auction, watchlist=True)
+            new_watchlist_item.save()
+        return render(request, "auctions/watchlist.html", {
+            "user" : user,
+            "message" : "Add to watchlist"
+        })
+    else:
+        watchlist_item = Watchlist.objects.filter(user_id=user, watchlist=True)
+        return render(request, "auctions/watchlist.html", {
+            "watchlist_item" : watchlist_item
+        })

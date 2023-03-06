@@ -34,6 +34,13 @@
         <textarea name="comment" id="comment" cols="30" rows="10" placeholder="Add a comment"></textarea>
         <input type="number" name="amount" placeholder="Bid on this item" step="0.01">
         <input type="submit">
-    {% endif %}
 </form>
+<form action="{% url 'watchlist' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" value="Add to a watchlist" name="add/remove" id="btn-submit">
+    <input type="hidden" name="auction_id" id="auction_id" value="{{ auction.id }}">
+    <span  id="btn-heart" class="material-symbols-outlined">favorite</span>
+    </button>
+</form>
+{% endif %}
 {% endblock %}
