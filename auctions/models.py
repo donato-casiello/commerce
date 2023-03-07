@@ -12,7 +12,7 @@ class Auction(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     start_bid = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     active = models.BooleanField(default=True)
-
+    image = models.ImageField(upload_to='auctions_images/', blank=True)
     def __str__(self):
         return f"{self.title} : {self.owner}"
     

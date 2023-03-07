@@ -91,7 +91,11 @@ def create(request):
                 "user" : user,
                 "message" : message
             })
-        new_auction = Auction(title=title, description=description, owner=user, start_bid=bid_decimal)
+        if 'image' in request.FILES:
+            image = request.FILES["image"]
+        else:
+            image = None
+        new_auction = Auction(title=title, description=description, owner=user, start_bid=bid_decimal, image=image)
         new_auction.save()
         return HttpResponseRedirect(reverse("index"))
     else:

@@ -3,7 +3,7 @@
 {% block body %}
     <h2>Create new auction</h2>
     <div>
-        <form id="create" action="{% url 'create' %}" method="post">
+        <form id="create" action="{% url 'create' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="mb-3">
                 <input class="form-control" type="text" name="title" placeholder="Title" required id="create">
@@ -17,6 +17,7 @@
             <div class="mb-3">
                 <input class="form-control form-control-sm" type="text" name="bid" placeholder="Starting bid" step=0.01 required id="create">
             </div class="mb-3">
+            <input type="file" name="image" id="image" placeholder="Upload an image">
             <input class="btn btn-primary" type="submit" value="Create">
         </form>
     </div>
