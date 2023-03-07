@@ -13,6 +13,7 @@ class Auction(models.Model):
     start_bid = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='auctions_images/', blank=True)
+    category = models.CharField(max_length=64, blank=True)
     def __str__(self):
         return f"{self.title} : {self.owner}"
     

@@ -10,6 +10,7 @@ from decimal import Decimal
 
 from .models import User, Auction, Bid, Comment, Watchlist
 
+CATEGORIES = ["Electronics", "Home appliances", "Home and garden", "Engines", "Collecting and passions", "Fashion and beauty"]
 
 def index(request):
     auctions_list = Auction.objects.all()
@@ -95,12 +96,17 @@ def create(request):
             image = request.FILES["image"]
         else:
             image = None
-        new_auction = Auction(title=title, description=description, owner=user, start_bid=bid_decimal, image=image)
+        if 'category' in request.POST:
+            category = request.POST["category"]
+        else:
+            category = None
+        new_auction = Auction(title=title, description=description, owner=user, start_bid=bid_decimal, image=image, category=category)
         new_auction.save()
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/create.html", {
-            "user" : user
+            "user" : user, 
+            "categories" : CATEGORIES 
         })
 
 @login_required(login_url='login')
