@@ -20,6 +20,7 @@
             <input type="file" name="image" id="image" placeholder="Upload an image">
             <label for="category">Category</label>
             <select name="category" id="category">
+                <option value=""></option>
                 {% for category in categories %}
                     <option value="{{ category }}">{{ category }}</option>
                 {% endfor %}

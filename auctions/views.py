@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.contrib import messages
 
 from decimal import Decimal
+from itertools import groupby
 
 from .models import User, Auction, Bid, Comment, Watchlist
 
@@ -191,3 +192,20 @@ def watchlist(request):
         return render(request, "auctions/watchlist.html", {
             "watchlist_item" : watchlist_item
         })
+
+def category(request):
+    """In this example, we're using the filter method to exclude auctions where the category is null, and the order_by method to sort the auctions by their category field.
+    We're also using the groupby function to group the auctions by their category, 
+    and storing the results in a dictionary with category names as keys and lists of auctions as values. 
+    Finally, we're passing the categories dictionary to the template in a context dictionary."""
+    auctions = Auction.objects.all()
+    categories = {}
+    for auction in auctions:
+        if auction.category:
+            if auction.category not in categories:
+                categories[auction.category] = []
+            categories[auction.category].append(auction)
+    return render(request, "auctions/category.html", {
+        "categories": categories
+    })
+

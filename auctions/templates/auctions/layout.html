@@ -20,7 +20,8 @@
             {% if user.is_authenticated %}
             <div class="nav-group d-flex">
                 <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-                    <a class="nav-link" href="{% url 'create' %}">Create new auction</a>
+                <a class="nav-link" href="{% url 'category' %}">Category</a>
+                <a class="nav-link" href="{% url 'create' %}">Create new auction</a>
             </div>
 
             <div class="nav-group d-flex">

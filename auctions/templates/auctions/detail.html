@@ -16,6 +16,11 @@
     {% if auction.image %}
         <img src="{{ auction.image.url }}" alt="{{ auction.title }}">
     {% endif %}
+    {% if auction.category %}
+        <p>Category: {{ auction.category }}</p>
+    {% else %}
+        <p>Category: no category listed</p>
+    {% endif %}
     <ul>
         {% if comments %}
             {% for comment in comments %}
