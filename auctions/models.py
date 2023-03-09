@@ -34,4 +34,4 @@ class Comment(models.Model):
 class Watchlist(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     auction_id = models.ForeignKey(Auction, on_delete=models.CASCADE)
-    watchlist = models.BooleanField(default=False)
+    watchlist = models.BooleanField(default=None)

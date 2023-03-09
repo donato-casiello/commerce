@@ -1,3 +1,4 @@
+from urllib.parse import urlencode
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -5,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib import messages
+from django.db.models import Max
 
 from decimal import Decimal
 from itertools import groupby
@@ -16,8 +18,10 @@ CATEGORIES = ["Electronics", "Home appliances", "Home and garden", "Engines", "C
 
 def index(request):
     auctions_list = Auction.objects.all()
+    current_price = Bid.objects.values('auction_id').annotate(max_amount=Max('amount'))
     return render(request, "auctions/index.html", {
-        "auctions_list" : auctions_list
+        "auctions_list" : auctions_list,
+        "current_price" : current_price
     })
 
 def login_view(request):
@@ -81,10 +85,11 @@ def create(request):
         try:
             bid_decimal = Decimal(bid)
         except:
-            message = "Enter a valid bid: bid must be a number"
+            message = "Enter a valid bid: bid must be a number (for decimal numbers use dot '.' instead ',')"
             return render(request, "auctions/create.html", {
                 "user" : user,
-                "message" : message
+                "message" : message,
+                "categories" : CATEGORIES
             })
         bid_decimal = Decimal(bid)
         # Check the user's input
@@ -132,9 +137,9 @@ def detail(request, auction_id):
                 # There was some bids
                 if price != auction.start_bid:
                     highest_bid = Bid.objects.filter(auction_id=auction.id, amount=price).first()
-                    messages.success(request, f"Auction has been closed. The winner is {highest_bid.user_id}")
+                    messages.alert(request, f"Auction has been closed. The winner is {highest_bid.user_id}")
                 else:
-                    messages.success(request, "Auction has been closed. Nobody put a bid on this item")
+                    messages.alert(request, "Auction has been closed. Nobody put a bid on this item")
                 return HttpResponseRedirect(reverse('detail', args=[auction.id]))
         # User doesn't create the auction
         else:
@@ -148,23 +153,37 @@ def detail(request, auction_id):
                 if amount > price:
                     new_bid = Bid.objects.create(auction_id=auction, amount=amount, user_id=user)
                 else:
-                    message = "Your bid must be greater"
+                    messages.error(request, "Your bid must be greater")
                     return render(request, "auctions/detail.html", {
                         "auction" : auction,
                         "price" : price,
                         "start_bid" : auction.start_bid, 
-                        "message" : message, 
+                        "message" : messages.error, 
                     })
-            return HttpResponseRedirect(reverse('detail', args=[auction.id]))
+                return HttpResponseRedirect(reverse('detail', args=[auction.id]))
+            # Check for watchlist
+            elif 'watchlist' in request.POST:
+                # Check if the auction is already in the user's watchlist
+                if in_watchlist:
+                    # Remove the auction from the user's watchlist
+                    Watchlist.objects.filter(user_id=user.id, auction_id=auction.id).delete()
+                    messages.success(request, "Auction removed from watchlist.")
+                else:
+                    # Add the auction to the user's watchlist
+                    watchlist_item = Watchlist(user_id=user, auction_id=auction)
+                    watchlist_item.save()
+                    messages.success(request, "Auction added to watchlist.")
+    # Render the detail page
     else:
         comments = Comment.objects.filter(auction_id=auction)
+        message_watchlist = messages.get_messages(request)
         return render(request, "auctions/detail.html", {
             "auction" : auction,
             "price" : price,
             "start_bid" : auction.start_bid,
             "owner" : auction.owner,
             "user_id" : user.id,
-            "comments" : comments
+            "comments" : comments,
         })
 
 
@@ -177,23 +196,28 @@ def watchlist(request):
         auction_id = request.POST["auction_id"]
         auction = Auction.objects.get(pk=auction_id)    
         watchlist_item = Watchlist.objects.filter(user_id=user, auction_id=auction).first()
-        if watchlist_item:
+        if watchlist_item.watchlist == True:
             # The user already has the item in his watchlist
             watchlist_item.watchlist = False
             watchlist_item.save()
+            message_watchlist = "Remove to the watchlist"
         else:
             # The user doesn't have the item in his watchlist
-            new_watchlist_item = Watchlist(user_id=user, auction_id=auction, watchlist=True)
+            new_watchlist_item = Watchlist.objects.get(user_id=user, auction_id=auction)
+            new_watchlist_item.watchlist = True
             new_watchlist_item.save()
-        return render(request, "auctions/watchlist.html", {
-            "user" : user,
-            "message" : "Add to watchlist"
-        })
+            message_watchlist = "Add to the watchlist"
+        query_params = urlencode({'message_watchlist': message_watchlist})
+        return HttpResponseRedirect(reverse("detail", args=(auction_id,)) + f'?{query_params}')
+    # The user visit the watchlist page
     else:
         watchlist_item = Watchlist.objects.filter(user_id=user, watchlist=True)
+        message_watchlist = request.GET.get('message_watchlist')
         return render(request, "auctions/watchlist.html", {
-            "watchlist_item" : watchlist_item
+            "watchlist_item" : watchlist_item,
+            "message_watchlist" : message_watchlist
         })
+
 
 def category(request):
     """In this example, we're using the filter method to exclude auctions where the category is null, and the order_by method to sort the auctions by their category field.
