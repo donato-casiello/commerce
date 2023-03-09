@@ -8,6 +8,7 @@ from django.contrib import messages
 
 from decimal import Decimal
 from itertools import groupby
+from datetime import date
 
 from .models import User, Auction, Bid, Comment, Watchlist
 
@@ -101,7 +102,8 @@ def create(request):
             category = request.POST["category"]
         else:
             category = None
-        new_auction = Auction(title=title, description=description, owner=user, start_bid=bid_decimal, image=image, category=category)
+        now = date.today()
+        new_auction = Auction(title=title, description=description, owner=user, start_bid=bid_decimal, image=image, category=category, date = now)
         new_auction.save()
         return HttpResponseRedirect(reverse("index"))
     else:

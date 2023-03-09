@@ -39,7 +39,7 @@ h1 {
 }
 
 .material-symbols-outlined {
-    color: white;
+    color: red;
     font-variation-settings:
     'FILL' 0,
     'wght' 400,
@@ -60,6 +60,7 @@ h1 {
 
 #btn-heart {
     color: black;
+    width: 30px;
 }
 
 #btn-submit {

@@ -8,12 +8,13 @@ class User(AbstractUser):
 
 class Auction(models.Model):
     title = models.CharField(max_length=64)
-    description = models.TextField(max_length=200)
+    description = models.TextField(max_length=200, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     start_bid = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='auctions_images/', blank=True)
     category = models.CharField(max_length=64, blank=True)
+    date = models.DateField()
     def __str__(self):
         return f"{self.title} : {self.owner}"
     
