@@ -137,9 +137,9 @@ def detail(request, auction_id):
                 # There was some bids
                 if price != auction.start_bid:
                     highest_bid = Bid.objects.filter(auction_id=auction.id, amount=price).first()
-                    messages.alert(request, f"Auction has been closed. The winner is {highest_bid.user_id}")
+                    messages.success(request, f"Auction has been closed. The winner is {highest_bid.user_id}")
                 else:
-                    messages.alert(request, "Auction has been closed. Nobody put a bid on this item")
+                    messages.success(request, "Auction has been closed. Nobody put a bid on this item")
                 return HttpResponseRedirect(reverse('detail', args=[auction.id]))
         # User doesn't create the auction
         else:
@@ -185,6 +185,8 @@ def detail(request, auction_id):
                 watchlist_item.save()
                 context = {"auction":auction, "price":price, "start_bid":auction.start_bid, "message_watchlist":"Add again to watchlist"}
                 return render (request, "auctions/detail.html", context)
+        if 'comment' in request.POST:
+            return HttpResponseRedirect(reverse('detail', args=[auction.id]))
     # Render the detail page
     else:
         comments = Comment.objects.filter(auction_id=auction)
@@ -212,7 +214,7 @@ def category(request):
     We're also using the groupby function to group the auctions by their category, 
     and storing the results in a dictionary with category names as keys and lists of auctions as values. 
     Finally, we're passing the categories dictionary to the template in a context dictionary."""
-    auctions = Auction.objects.all()
+    auctions = Auction.objects.filter(active=True)
     categories = {}
     for auction in auctions:
         if auction.category:

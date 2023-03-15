@@ -44,12 +44,20 @@
 <form action="{% url 'detail' auction.id %}" method="post">
     {% csrf_token %}
     {% if auction.owner.id == request.user.id  %}
-        <p>CLOSE THE AUCTION</p>
-        <input type="submit" name="close" id="close">
+        {% if auction.active == True %}
+            <p>CLOSE THE AUCTION</p>
+            <input type="submit" name="close" id="close">
+        {% endif %}
     {% else %}
-        <textarea name="comment" id="comment" cols="30" rows="10" placeholder="Add a comment"></textarea>
-        <input type="number" name="amount" placeholder="Bid on this item" step="0.01" required>
-        <input type="submit">
+        <form action="{% url 'detail' auction.id %}">
+            <textarea name="comment" id="comment" cols="30" rows="10" placeholder="Add a comment"></textarea>
+            <input type="submit" value="Submit comment">
+        </form>
+        <form action="{% url 'detail' auction.id %}">
+            <input type="number" name="amount" placeholder="Bid on this item" step="0.01" required>
+            <input type="submit" value="Submit bid">
+        </form>
+        
 </form>
 {% if message_watchlist %}
     <p>{{ message_watchlist }}</p>
