@@ -164,7 +164,7 @@ def detail(request, auction_id):
             # Check for watchlist
             elif 'watchlist' in request.POST:
                 # Check if the auction is already in the user's watchlist
-                if in_watchlist:
+                if watchlist:
                     # Remove the auction from the user's watchlist
                     Watchlist.objects.filter(user_id=user.id, auction_id=auction.id).delete()
                     messages.success(request, "Auction removed from watchlist.")
