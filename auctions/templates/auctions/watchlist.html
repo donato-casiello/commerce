@@ -1,13 +1,10 @@
-{% extends 'auctions/layout.html' %}
 
-{% block body %}
-<h2>Watchlist</h2>
-<ul class="list-group list-group-flush">
-    {% for item in watchlist_item %}
-        <li class="list-group-item list-group-item-action">
-            <a href="{% url 'detail' item.auction_id.id %}" class="list-group-item list-group-item-action list-group-item-primary">
-                {{ item.auction_id.title }}</a> 
-        </li>
-    {% endfor %}
-</ul>
-{% endblock %}
+<h1>{{ watchlist_item.auction_id }} -- > {{ watchlist_item.watchlist }}</h1>
+
+{% for i in watchlist_list %}
+    <h2>{{ i.auction_id }}</h2>
+{% endfor %}
+
+{% if message %}
+    <h1>{{ message }}</h1>
+{% endif %}

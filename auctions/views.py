@@ -161,6 +161,7 @@ def detail(request, auction_id):
                         "message" : messages.error, 
                     })
                 return HttpResponseRedirect(reverse('detail', args=[auction.id]))
+            """ Maybe we don't need this anymore because is implemented inside the watchlist function
             # Check for watchlist
             elif 'watchlist' in request.POST:
                 # Check if the auction is already in the user's watchlist
@@ -172,7 +173,7 @@ def detail(request, auction_id):
                     # Add the auction to the user's watchlist
                     watchlist_item = Watchlist(user_id=user, auction_id=auction)
                     watchlist_item.save()
-                    messages.success(request, "Auction added to watchlist.")
+                    messages.success(request, "Auction added to watchlist.")"""
     # Render the detail page
     else:
         comments = Comment.objects.filter(auction_id=auction)
@@ -196,28 +197,34 @@ def watchlist(request):
         auction_id = request.POST["auction_id"]
         auction = Auction.objects.get(pk=auction_id)    
         watchlist_item = Watchlist.objects.filter(user_id=user, auction_id=auction).first()
-        if watchlist_item.watchlist == True:
-            # The user already has the item in his watchlist
+        # If is the first time adding an auction, we have to create a new value inside the watchlist model
+        if watchlist_item == None:
+            new_watchlist = Watchlist(user_id=user, auction_id=auction, watchlist=True)
+            new_watchlist.save()
+            return render (request, "auctions/watchlist.html", {
+                "message" : "Add to watchlist"
+            })
+        # The user want to remove the auction inside his watchlist
+        elif watchlist_item.watchlist == True:
             watchlist_item.watchlist = False
             watchlist_item.save()
-            message_watchlist = "Remove to the watchlist"
-        else:
-            # The user doesn't have the item in his watchlist
-            new_watchlist_item = Watchlist.objects.get(user_id=user, auction_id=auction)
-            new_watchlist_item.watchlist = True
-            new_watchlist_item.save()
-            message_watchlist = "Add to the watchlist"
-        query_params = urlencode({'message_watchlist': message_watchlist})
-        return HttpResponseRedirect(reverse("detail", args=(auction_id,)) + f'?{query_params}')
-    # The user visit the watchlist page
+            return render (request, "auctions/watchlist.html", {
+                "message" : "Removed to watchlist"
+            })
+        # The user want to add again 
+        elif watchlist_item.watchlist == False:
+            watchlist_item.watchlist = True
+            watchlist_item.save()
+            return render (request, "auctions/watchlist.html", {
+                "message" : "Add again to watchlist"
+            })
+            
+    # Display the watchlist list
     else:
-        watchlist_item = Watchlist.objects.filter(user_id=user, watchlist=True)
-        message_watchlist = request.GET.get('message_watchlist')
-        return render(request, "auctions/watchlist.html", {
-            "watchlist_item" : watchlist_item,
-            "message_watchlist" : message_watchlist
+        watchlist_list = Watchlist.objects.filter(user_id=user, watchlist=True)
+        return render (request, "auctions/watchlist.html", {
+            "watchlist_list" : watchlist_list
         })
-
 
 def category(request):
     """In this example, we're using the filter method to exclude auctions where the category is null, and the order_by method to sort the auctions by their category field.
