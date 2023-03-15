@@ -9,6 +9,8 @@ h1 {
     text-align: center;
     margin: 15px;
     font-size: 70px;
+    border: 1px solid;
+    border-radius: 25px;
 }
 
 #nav_bar {
@@ -37,7 +39,7 @@ h1 {
 }
 
 .material-symbols-outlined {
-    color: white;
+    color: red;
     font-variation-settings:
     'FILL' 0,
     'wght' 400,
@@ -58,9 +60,18 @@ h1 {
 
 #btn-heart {
     color: black;
+    width: 30px;
 }
 
 #btn-submit {
     background: none;
     border: none;
+}
+
+
+#create {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: yellow;
 }

@@ -8,11 +8,27 @@
     </div>
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-success">{{ message }}</div>
+            {% if message.tag == 'success' %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% elif message.tag == 'error' %}
+                <div class="alert alert-error">{{ message }}</div>
+            {% else %}
+                <div class="alert">{{ message }}</div>
+            {% endif %}
         {% endfor %}
     {% endif %}
+
     <h2>Current price: {{ price }}</h2>
     <h2>Starting bid: {{ start_bid }}</h2>
+    {% if auction.image %}
+        <img src="{{ auction.image.url }}" alt="{{ auction.title }}">
+    {% endif %}
+    {% if auction.category %}
+        <p>Category: {{ auction.category }}</p>
+    {% else %}
+        <p>Category: no category listed</p>
+    {% endif %}
+        <p>Created: {{ auction.date }}</p>
     <ul>
         {% if comments %}
             {% for comment in comments %}
@@ -32,15 +48,14 @@
         <input type="submit" name="close" id="close">
     {% else %}
         <textarea name="comment" id="comment" cols="30" rows="10" placeholder="Add a comment"></textarea>
-        <input type="number" name="amount" placeholder="Bid on this item" step="0.01">
+        <input type="number" name="amount" placeholder="Bid on this item" step="0.01" required>
         <input type="submit">
 </form>
+
 <form action="{% url 'watchlist' %}" method="post">
     {% csrf_token %}
-    <button type="submit" value="Add to a watchlist" name="add/remove" id="btn-submit">
+    <button title="Add/remove to watchlist" type="submit" value="Add to a watchlist" name="add/remove" id="add/remove">Add/remove from watchlist</button>
     <input type="hidden" name="auction_id" id="auction_id" value="{{ auction.id }}">
-    <span  id="btn-heart" class="material-symbols-outlined">favorite</span>
-    </button>
 </form>
 {% endif %}
 {% endblock %}
