@@ -51,8 +51,10 @@
         <input type="number" name="amount" placeholder="Bid on this item" step="0.01" required>
         <input type="submit">
 </form>
-
-<form action="{% url 'watchlist' %}" method="post">
+{% if message_watchlist %}
+    <p>{{ message_watchlist }}</p>
+{% endif %}
+<form action="{% url 'detail' auction.id %}" method="post">
     {% csrf_token %}
     <button title="Add/remove to watchlist" type="submit" value="Add to a watchlist" name="add/remove" id="add/remove">Add/remove from watchlist</button>
     <input type="hidden" name="auction_id" id="auction_id" value="{{ auction.id }}">
