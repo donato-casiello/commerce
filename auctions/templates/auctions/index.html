@@ -27,7 +27,7 @@
                                 
                                 <div class="container col-4 d-flex align-items-center justify-content-center">
                                     {% if auction.image %}
-                                        <img src="{{auction.image.url}}" alt="{{ auction.title }}" width="400px">
+                                        <img src="{{auction.image.url}}" alt="{{ auction.title }}" width="400px" height="300px">
                                     {% else %}
                                         <img src="/media/auctions_images/default-placeholder.png" alt="default image" width="200px">
                                         <label class="mx-5" for="img">No image provided</label>

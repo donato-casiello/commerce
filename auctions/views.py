@@ -14,7 +14,7 @@ from datetime import date
 
 from .models import User, Auction, Bid, Comment, Watchlist
 
-CATEGORIES = ["Electronics", "Home appliances", "Home and garden", "Engines", "Collecting and passions", "Fashion and beauty"]
+CATEGORIES = ["Electronics", "Home appliances", "Home and garden", "Collecting and passions", "Fashion and beauty", "Mobility"]
 
 def index(request):
     auctions_list = Auction.objects.filter(active=True)
