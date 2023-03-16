@@ -138,7 +138,7 @@ def detail(request, auction_id):
                 if price != auction.start_bid:
                     highest_bid = Bid.objects.filter(auction_id=auction.id, amount=price).first()
                     messages.success(request, f"Auction has been closed. The winner is {highest_bid.user_id}")
-                    return HttpResponseRedirect(reverse('detail', args=[auction]))
+                    return HttpResponseRedirect(reverse('detail', args=[auction.id]))
                 else:
                     messages.success(request, "Auction has been closed. Nobody put a bid on this item")
                 auction.active = False
