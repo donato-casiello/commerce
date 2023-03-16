@@ -1,71 +1,94 @@
 {% extends 'auctions/layout.html' %}
 
 {% block body %}
-<fieldset>
-    <legend><h1>{{ auction.title }}</h1></legend>
-    <div>
-        <p>Description: {{ auction.description }}</p>
-    </div>
+<div class="container my-3">
     {% if messages %}
         {% for message in messages %}
-            {% if message.tag == 'success' %}
-                <div class="alert alert-success">{{ message }}</div>
-            {% elif message.tag == 'error' %}
-                <div class="alert alert-error">{{ message }}</div>
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success text-center">{{ message }}</div>
+            {% elif message.tags == 'error' %}
+                <p class="alert alert-warning text-center">{{ message }}</p>
             {% else %}
-                <div class="alert">{{ message }}</div>
+                <p class="alert alert-primary text-center">{{ message }}</p>
             {% endif %}
         {% endfor %}
     {% endif %}
+    {% if message_watchlist %}
+        <p class="alert alert-success text-center">{{ message_watchlist }}</p>
+    {% endif %}
+</div>
 
-    <h2>Current price: {{ price }}</h2>
-    <h2>Starting bid: {{ start_bid }}</h2>
-    {% if auction.image %}
-        <img src="{{ auction.image.url }}" alt="{{ auction.title }}">
-    {% endif %}
-    {% if auction.category %}
-        <p>Category: {{ auction.category }}</p>
-    {% else %}
-        <p>Category: no category listed</p>
-    {% endif %}
-        <p>Created: {{ auction.date }}</p>
-    <ul>
+    <div class="container border">
+        <div class="row">
+            
+            <div class="col-8">
+                {% if auction.image %}
+                    <img src="{{ auction.image.url }}" alt="{{ auction.title }}" width="600px">
+                {% else %}
+                    <img src="/media/auctions_images/default-placeholder.png" alt="image placeholder" width="600px">
+                {% endif %}
+            </div>
+
+            <div class="col p-4 d-flex flex-column align-items-start">
+                <h2 class="p-2">{{ auction.title }}</h2>  
+                <p class="p-2">Starting bid: {{ start_bid }}</p>
+                <p class="p-2">Current price: {{ price }}</p>
+                <p class="p-2"> {{ auction.description }}Description: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum quasi aperiam, repellendus, velit reprehenderit alias architecto ut totam ipsum distinctio explicabo temporibus atque placeat consectetur cum nisi hic cumque odio.</p>
+                <div class="container d-flex flex-column align-items-center p-2">
+                    {% if auction.owner.id == request.user.id  %}
+                    <form action="{% url 'detail' auction.id %}" method="post">
+                        {% csrf_token %}
+                            {% if auction.active == True %}
+                                <p>CLOSE THE AUCTION</p>
+                                <input type="submit" name="close" id="close">
+                            {% endif %}
+                    </form>
+                    {% else %}
+                    <form action="{% url 'detail' auction.id %}" method="post">
+                            {% csrf_token %}
+                            <input class="m-2" type="number" name="amount" placeholder="Bid on this item" step="0.01" required>
+                            <input class="btn btn-primary m-2" type="submit" value="Submit bid">
+                    </form>
+
+                    <form action="{% url 'detail' auction.id %}" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-light mt-4 p-2" title="Add/remove to watchlist" type="submit" value="Add to a watchlist" name="add/remove" id="add/remove">
+                            Add/remove from watchlist
+                        </button>
+                        <input type="hidden" name="auction_id" id="auction_id" value="{{ auction.id }}">
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container p-3">
+        <p>Listed by: {{ auction.owner }}</p>
+        {% if auction.category %}
+            <p>Category: {{ auction.category }}</p>
+        {% else %}
+            <p>Category: no category listed</p>
+        {% endif %}
+
         {% if comments %}
-            {% for comment in comments %}
-            <li>{{ comment.user_id }}: {{ comment.comment }}</li>
-            {% endfor %}
-        {% endif %}
-    </ul>
-</fieldset>
-<h1>Bids on this item</h1>
-{% if message %}
-    <p>{{ message }}</p>
-{% endif %}
-<form action="{% url 'detail' auction.id %}" method="post">
-    {% csrf_token %}
-    {% if auction.owner.id == request.user.id  %}
-        {% if auction.active == True %}
-            <p>CLOSE THE AUCTION</p>
-            <input type="submit" name="close" id="close">
-        {% endif %}
-    {% else %}
-        <form action="{% url 'detail' auction.id %}">
-            <textarea name="comment" id="comment" cols="30" rows="10" placeholder="Add a comment"></textarea>
-            <input type="submit" value="Submit comment">
-        </form>
-        <form action="{% url 'detail' auction.id %}">
-            <input type="number" name="amount" placeholder="Bid on this item" step="0.01" required>
-            <input type="submit" value="Submit bid">
-        </form>
-        
-</form>
-{% if message_watchlist %}
-    <p>{{ message_watchlist }}</p>
-{% endif %}
-<form action="{% url 'detail' auction.id %}" method="post">
-    {% csrf_token %}
-    <button title="Add/remove to watchlist" type="submit" value="Add to a watchlist" name="add/remove" id="add/remove">Add/remove from watchlist</button>
-    <input type="hidden" name="auction_id" id="auction_id" value="{{ auction.id }}">
-</form>
-{% endif %}
+        <h4>Comments</h4>
+        <ul class="list-group list-group-flush">
+                {% for comment in comments %}
+                <li class="list-group-item">{{ comment.user_id }}: {{ comment.comment }}</li>
+                {% endfor %}
+            {% endif %}
+            {% if auction.owner.id != request.user.id  %}
+                <form class="form-floating" action="{% url 'detail' auction.id %}" method="post">
+                    {% csrf_token %}
+                    <textarea class="form-control my-2" name="comment" id="comment" placeholder="Leave a comment"></textarea>
+                    <input class="btn btn-secondary" type="submit" value="Submit comment">
+                </form>
+            {% endif %}
+
+        </ul>
+    </div>
+        <div class="text-end my-2">
+            <p class="text-end"><i>Created: {{ auction.date }}</i></p>
+        </div>
 {% endblock %}

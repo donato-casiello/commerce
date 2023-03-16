@@ -1,31 +1,41 @@
 {% extends "auctions/layout.html" %}
 
+{% block title %}New Auction{% endblock %}
+
 {% block body %}
-    <h2>Create new auction</h2>
-    <div>
+
+<div class="container-fluid">
+    <h2 class="text-center">Create new auction</h2>
+    {% if message %}
+        <div class="alert alert-warning">{{message }}</div>
+    {% endif %}
+    <div class="row d-flex flex-column">
         <form id="create" action="{% url 'create' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="mb-3">
-                <input class="form-control" type="text" name="title" placeholder="Title" required id="create">
+            <div class="col">
+                <div class="container d-flex flex-column">
+                    <input autofocus class="form-control my-3" type="text" name="title" placeholder="Title" required id="create">
+                    <textarea class="form-control my-3" name="description" id="description" cols="30" rows="8" placeholder="Description"></textarea>
+                    <input class="form-control form-control-sm" type="text" name="bid" placeholder="Starting bid" step=0.01 required id="create">
+                    <div class="container d-flex flex-row justify-content-center align-items-center my-3">
+                        <div class="border rounded d-flex flex-row m-4 p-4">
+                            <input type="file" name="image" id="image" placeholder="Upload an image">
+                            <div>
+                                <label for="category">Category</label>
+                                <select name="category" id="category">
+                                    <option value=""></option>
+                                    {% for category in categories %}
+                                        <option value="{{ category }}">{{ category }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <input class="btn btn-primary" type="submit" value="Create">
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <textarea class="form-control" name="description" id="description" cols="30" rows="10" placeholder="Description"></textarea>
-            </div>
-            {% if message %}
-                <div class="alert alert-warning">{{message }}</div>
-            {% endif %}
-            <div class="mb-3">
-                <input class="form-control form-control-sm" type="text" name="bid" placeholder="Starting bid" step=0.01 required id="create">
-            </div class="mb-3">
-            <input type="file" name="image" id="image" placeholder="Upload an image">
-            <label for="category">Category</label>
-            <select name="category" id="category">
-                <option value=""></option>
-                {% for category in categories %}
-                    <option value="{{ category }}">{{ category }}</option>
-                {% endfor %}
-            </select>
-            <input class="btn btn-primary" type="submit" value="Create">
         </form>
     </div>
+</div>
+
 {% endblock %}

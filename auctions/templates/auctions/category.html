@@ -1,15 +1,20 @@
 {% extends 'auctions/layout.html' %}
+{% block title %}Categories{% endblock %}
 {% block body %}
-<h2>Categories</h2>
-    <ul>
+<div class="container-fluid">
+<h2 class="text-center">Categories</h2>
+    <ul class="list-group">
     {% for category, auctions in categories.items %}
-        <li>{{ category }}</li>
-        <ul>
-        {% for auction in auctions %}
-            <li><a href="{% url 'detail' auction.id %}">{{ auction.title }}</a></li>
-        {% endfor %}
-        </ul>
+        <li class="list-group-item border border-0" style="font-size: 25px;">{{ category }}</li>
+        <div class="container-fluid">
+            <ul class="list-group d-flex flex-column">
+            {% for auction in auctions %}
+                <li class="list-group-item list-group-item-action mt-3 ml-4"><a href="{% url 'detail' auction.id %}">{{ auction.title }}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
     {% endfor %}
     </ul>
+</div>
 {% endblock %}
 

@@ -1,29 +1,41 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-    {% if auctions_list %}
-    <ul class="list-group list-group-flush">
-        {% for auction in auctions_list %}
-            {% if auction.active == True %}
-                <li class="list-group-item list-group-item-action">
-                    <a href="{% url 'detail' auction.id %}" class="list-group-item list-group-item-action list-group-item-primary">{{ auction.title }}</a>
-                    Starting bid = € {{ auction.start_bid }}
-                    {% for i in current_price  %}
-                        {% if i.auction_id == auction.id %}
-                            current price: €{{ i.max_amount }}
-                        {% else %}
-                            current price: €{{ auction.start_bid }}
-                        {% endif %}
-                    {% endfor %}
-                    <div class="ms-2 me-auto">
-                        <p><i>{{ auction.description }}</i></p>
+    <h2 class="text-center">Active Listings</h2>
+    <div class="container-fluid">
+                {% if auctions_list %}
+                    {% for auction in auctions_list %}
+                    <div class="row justify-content-center align-items-center flex-column flex-lg-row mt-3 border border-top-0 border-5">
+
+                        <div class="col d-flex flex-column" style="height:400px;" id="list-index">
+                            <a href="{% url 'detail' auction.id %}" class="p-2 text-center mt-3">
+                                <h4>{{ auction.title }}</h4>
+                            </a>
+                                            
+                            <p class="p-2 mt-3">Starting bid: €{{ auction.start_bid }}</p>
+                            {% for i in current_price  %}
+                                {% if auction.id == i.auction_id %}
+                                    <p class="p-2">Current price: €{{ i.max_amount|floatformat:2 }}</p>
+                                {% endif %}
+                            {% endfor %}
+                                    <p class="p-2 border-bottom">{{ auction.description }}</p>
+
+
+                                    <p class="mt-auto p-2 text-muted">Created: <i>{{ auction.date }}</i></p>
+                        </div> 
+
+                                
+                                <div class="container col-4 d-flex align-items-center justify-content-center">
+                                    {% if auction.image %}
+                                        <img src="{{auction.image.url}}" alt="{{ auction.title }}" width="400px">
+                                    {% else %}
+                                        <img src="/media/auctions_images/default-placeholder.png" alt="default image" width="200px">
+                                        <label class="mx-5" for="img">No image provided</label>
+                                    {% endif %}
+                                </div>
+
                     </div>
-                </li>
-    {% endif %}
-        {% endfor %}
-
-
-    </ul>
-    {% endif %}
+                {% endfor %}
+            {% endif %}
+    </div>
 {% endblock %}

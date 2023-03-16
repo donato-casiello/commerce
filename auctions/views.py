@@ -17,7 +17,7 @@ from .models import User, Auction, Bid, Comment, Watchlist
 CATEGORIES = ["Electronics", "Home appliances", "Home and garden", "Engines", "Collecting and passions", "Fashion and beauty"]
 
 def index(request):
-    auctions_list = Auction.objects.all()
+    auctions_list = Auction.objects.filter(active=True)
     current_price = Bid.objects.values('auction_id').annotate(max_amount=Max('amount'))
     return render(request, "auctions/index.html", {
         "auctions_list" : auctions_list,
@@ -97,8 +97,10 @@ def create(request):
             message = "Enter a valid bid: starting bid must be a number greater than 0 and less than a 1.000.000"
             return render(request, "auctions/create.html", {
                 "user" : user,
-                "message" : message
+                "message" : message,
+                "categories" : CATEGORIES
             })
+        # Check for images
         if 'image' in request.FILES:
             image = request.FILES["image"]
         else:
@@ -129,19 +131,20 @@ def detail(request, auction_id):
         price = max(bid.amount for bid in bids )
     # User submit the form
     if request.method == "POST":
-        # The user created the auction
+        # The user created the auction, he can close the auction
         if auction.owner.id == request.user.id:
             if 'close' in request.POST:
-                auction.active = False
-                auction.save()
                 # There was some bids
                 if price != auction.start_bid:
                     highest_bid = Bid.objects.filter(auction_id=auction.id, amount=price).first()
                     messages.success(request, f"Auction has been closed. The winner is {highest_bid.user_id}")
+                    return HttpResponseRedirect(reverse('detail', args=[auction]))
                 else:
                     messages.success(request, "Auction has been closed. Nobody put a bid on this item")
+                auction.active = False
+                auction.save()
                 return HttpResponseRedirect(reverse('detail', args=[auction.id]))
-        # User doesn't create the auction
+        # User doesn't create the auction, he can bid, comment or add to watchlist
         else:
             # Check for comments
             if 'comment' in request.POST and request.POST["comment"].strip() != "":
@@ -150,17 +153,19 @@ def detail(request, auction_id):
             # Check for bid
             elif 'amount' in request.POST:
                 amount = float(request.POST["amount"])
-                if amount > price:
-                    new_bid = Bid.objects.create(auction_id=auction, amount=amount, user_id=user)
+                try:
+                    amount_decimal = Decimal(amount)
+                except:
+                    messages.error(request, "Enter a valid bid: bid must be a number (for decimal numbers use dot '.' instead ',')")
+                    return HttpResponseRedirect(reverse('detail', args=[auction.id]))
+                amount_decimal = Decimal(amount)
+                if amount_decimal > 10000 or amount_decimal < price:
+                    messages.error(request, "You bid must be smaller than 10.000 and greater than the others")
+                    return HttpResponseRedirect(reverse('detail', args=[auction.id]))
                 else:
-                    messages.error(request, "Your bid must be greater")
-                    return render(request, "auctions/detail.html", {
-                        "auction" : auction,
-                        "price" : price,
-                        "start_bid" : auction.start_bid, 
-                        "message" : messages.error, 
-                    })
-                return HttpResponseRedirect(reverse('detail', args=[auction.id]))
+                    new_bid = Bid.objects.create(auction_id=auction, amount=amount, user_id=user)
+                    new_bid.save()
+                    return HttpResponseRedirect(reverse('detail', args=[auction.id]))
         # User add or remove auction from watchlist
         if 'add/remove' in request.POST:
             # Check the user already has the item inside his watchlist

@@ -9,14 +9,35 @@ h1 {
     text-align: center;
     margin: 15px;
     font-size: 70px;
-    border: 1px solid;
-    border-radius: 25px;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    color: black;
+}
+
+
+#list-index {
+    background-color: rgb(231, 225, 225);
 }
 
 #nav_bar {
+    flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-between;
     background-color: rgb(45,45,45);
+}
+
+.list-group-item-action {
+    background-color: rgb(231, 225, 225);
+}
+
+.list-group-item-action:hover {
+    background-color: rgb(141, 141, 141);
 }
 
 
@@ -66,12 +87,4 @@ h1 {
 #btn-submit {
     background: none;
     border: none;
-}
-
-
-#create {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: yellow;
 }
